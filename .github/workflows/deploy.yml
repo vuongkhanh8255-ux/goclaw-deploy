@@ -24,5 +24,6 @@ jobs:
           fi
           chmod +x prepare-env.sh
           ./prepare-env.sh
-          docker compose pull
-          docker compose up -d
+          sed -i '/cpus:/d' docker-compose.yml
+          docker compose -f docker-compose.yml -f docker-compose.postgres.yml pull
+          docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d
