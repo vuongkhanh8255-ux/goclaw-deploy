@@ -1,0 +1,28 @@
+name: Deploy Goclaw to VPS
+
+on:
+  push:
+    branches: [ main, master, dev ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        port: ${{ secrets.VPS_PORT }}
+        script: |
+          cd /opt/goclaw || mkdir -p /opt/goclaw && cd /opt/goclaw
+          if [ ! -d ".git" ]; then
+            git clone https://github.com/vuongkhanh8255-ux/goclaw-deploy.git .
+          else
+            git pull origin main
+          fi
+          chmod +x prepare-env.sh
+          ./prepare-env.sh
+          docker compose pull
+          docker compose up -d
